@@ -1,0 +1,18 @@
+setwd("D:\\RStudio Directory\\Edx\\Clustering\\Recitation")
+flower <- read.csv("flower.csv", header = FALSE)
+str(flower)
+flower <- as.matrix(flower)
+str(flower)
+flowerVector <- as.vector(flower)
+str(flowerVector)
+
+distance <- dist(flowerVector, method = "euclidean")
+clusterFlower = hclust(distance, method = "ward.D")
+plot(clusterFlower)
+rect.hclust(clusterFlower, k = 3, border = "red")
+FlowerClusters <- cutree(clusterFlower, k = 3)
+FlowerClusters
+tapply(flowerVector, FlowerClusters, mean)
+dim(flowerVector) = c(50,50)
+image(flowerVector, axes = FALSE)
+image(flower, axes = FALSE, col = grey(seq(0,1,length = 256)))

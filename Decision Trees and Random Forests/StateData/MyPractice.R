@@ -1,0 +1,32 @@
+str(statedata)
+
+#Linear Regression
+stateLR <- lm(Life.Exp ~ ., data = statedata)
+summary(stateLR)
+SSE<- sum((stateLR$fitted.values - statedata$Life.Exp)^2)
+stateLR1 <- lm(Life.Exp ~ Population + Murder + Frost + HS.Grad , data = statedata)
+summary(stateLR1)
+SSE1 <- sum((stateLR1$fitted.values - statedata$Life.Exp)^2)
+
+library(rpart)
+stateCART <- rpart(Life.Exp ~ ., data = statedata)
+prp(stateCART)
+sum((predict(stateCART, data = statedata) - statedata$Life.Exp)^2)
+stateCART1 <- rpart(Life.Exp ~ ., data = statedata, minbucket = 5)
+prp(stateCART1)
+sum((predict(stateCART1, data = statedata) - statedata$Life.Exp)^2)
+stateCART2 <- rpart(Life.Exp ~ Area, data = statedata, minbucket = 1)
+prp(stateCART2)
+sum((predict(stateCART2, data = statedata) - statedata$Life.Exp)^2)
+
+library(caret)
+set.seed(111)
+tr.Control <- trainControl(method = "cv", number = 10)
+tune.Grid <- expand.grid(.cp = seq(0.01,0.5,0.01))
+stateCV <- train(Life.Exp ~ ., data = statedata, trControl = tr.Control, method = "rpart", tuneGrid = tune.Grid)
+prp(stateCV$finalModel)
+sum((predict(stateCV$finalModel, data = statedata) - statedata$Life.Exp)^2)
+stateCV <- train(Life.Exp ~ Area, data = statedata, trControl = tr.Control, method = "rpart", tuneGrid = tune.Grid)
+prp(stateCV$finalModel)
+sum((predict(stateCV$finalModel, data = statedata) - statedata$Life.Exp)^2)
+
